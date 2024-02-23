@@ -4,9 +4,11 @@ const knownStatuses = ['pending', 'paid'] as const;
 
 export const CreateInvoiceSchema = z.object({
   id: z.string(),
-  customerId: z.string(),
-  amount: z.coerce.number(),
-  status: z.enum(knownStatuses),
+  customerId: z.string({ invalid_type_error: 'Please select a customer.' }),
+  amount: z.coerce
+    .number()
+    .gt(0, { message: 'Amount must be greater than 0.' }),
+  status: z.enum(knownStatuses, { invalid_type_error: 'Invalid status.' }),
   date: z.string(),
 });
 
