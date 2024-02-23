@@ -10,11 +10,11 @@ import {
   CardsSkeleton,
 } from '@/app/ui/skeletons';
 import CardWrapper from '@/app/ui/dashboard/cards';
+import { auth } from '@/auth';
 
-export default async function Page(props: unknown) {
+export default async function Page() {
   return (
     <main>
-      <pre>{JSON.stringify(props, null, 2)}</pre>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
         Dashboard
       </h1>
