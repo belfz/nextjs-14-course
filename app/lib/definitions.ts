@@ -1,3 +1,21 @@
+import { z } from 'zod';
+
+const knownStatuses = ['pending', 'paid'] as const;
+
+export const CreateInvoiceSchema = z.object({
+  id: z.string(),
+  customerId: z.string(),
+  amount: z.coerce.number(),
+  status: z.enum(knownStatuses),
+  date: z.string(),
+});
+
+const InsertInvoiceSchema = CreateInvoiceSchema.omit({ id: true });
+const UpdateInvoiceSchema = CreateInvoiceSchema.omit({ id: true, date: true });
+
+export type InsertInvoice = z.infer<typeof InsertInvoiceSchema>;
+export type UpdateInvoice = z.infer<typeof UpdateInvoiceSchema>;
+
 // This file contains type definitions for your data.
 // It describes the shape of the data, and what data type each property should accept.
 // For simplicity of teaching, we're manually defining these types.

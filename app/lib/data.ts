@@ -7,6 +7,8 @@ import {
   LatestInvoiceRaw,
   User,
   Revenue,
+  InsertInvoice,
+  UpdateInvoice,
 } from './definitions';
 import { formatCurrency } from './utils';
 import { unstable_noStore as noStore } from 'next/cache';
@@ -236,5 +238,52 @@ export async function getUser(email: string) {
   } catch (error) {
     console.error('Failed to fetch user:', error);
     throw new Error('Failed to fetch user.');
+  }
+}
+
+export async function insertInvoice({
+  customerId,
+  amount,
+  status,
+  date,
+}: InsertInvoice) {
+  try {
+    const data = await sql<InvoiceForm>`
+      INSERT INTO invoices (customer_id, amount, status, date)
+      VALUES (${customerId}, ${amount}, ${status}, ${date})
+      RETURNING id, customer_id, amount, status
+    `;
+
+    return data.rows[0];
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to create invoice.');
+  }
+}
+
+export async function updateInvoice(
+  id: string,
+  { customerId, amount, status }: UpdateInvoice,
+) {
+  try {
+    const data = await sql<InvoiceForm>`
+      UPDATE invoices
+      SET customer_id = ${customerId}, amount = ${amount}, status = ${status}
+      WHERE id = ${id}
+    `;
+
+    return data.rows[0];
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to update invoice.');
+  }
+}
+
+export async function deleteInvoice(id: string) {
+  try {
+    await sql`DELETE FROM invoices WHERE id = ${id}`;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to delete invoice.');
   }
 }
