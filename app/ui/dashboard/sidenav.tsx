@@ -3,13 +3,11 @@ import NavLinks from '@/app/ui/dashboard/nav-links';
 import AcmeLogo from '@/app/ui/acme-logo';
 import { inter } from '@/app/ui/fonts';
 import { PowerIcon } from '@heroicons/react/24/outline';
-import { auth, signOut } from '@/auth';
+import { auth, signIn, signOut } from '@/auth';
+import Image from 'next/image';
 
 export default async function SideNav() {
   const session = await auth();
-  if (session === null) {
-    return null;
-  }
   return (
     <div className="flex h-full flex-col px-3 py-4 md:px-2">
       <Link
@@ -24,8 +22,34 @@ export default async function SideNav() {
         <NavLinks />
         <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block"></div>
         <div className="flex h-auto w-full grow justify-end rounded-md bg-gray-50 p-3 md:flex-col">
-          <p className={`${inter.className}`}>Hello, {session.user?.email}</p>
+          {session?.user?.name && (
+            <>
+              <p className={`${inter.className}`}>
+                Hello, {session?.user?.name}
+              </p>
+            </>
+          )}
+          {session?.user?.image && (
+            <Image
+              src={session?.user?.image!}
+              width={50}
+              height={50}
+              className="rounded-full"
+              alt="Screenshots of the dashboard project showing desktop version"
+            />
+          )}
         </div>
+        <form
+          action={async () => {
+            'use server';
+            await signIn('github');
+          }}
+        >
+          <button className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">
+            <PowerIcon className="w-6" />
+            <div className="hidden md:block">Sign In</div>
+          </button>
+        </form>
         <form
           action={async () => {
             'use server';
